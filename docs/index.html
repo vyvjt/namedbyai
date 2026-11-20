@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>Named by AI — AI Search Visibility Audits for Local Clinics</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,700;8..60,900&family=Inter:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
+    <style>
+      button, [role="button"], select, summary, input:not([type="checkbox"], [type="radio"]) { min-height: 2.25rem; }
+
+      :root{
+        --bg:#f6f7f4;
+        --surface:#ffffff;
+        --surface-2:#eef1ec;
+        --ink:#131a16;
+        --muted:#5c6a61;
+        --line:#dde3da;
+        --accent:#0d6e5f;
+        --accent-strong:#084c41;
+        --accent-soft:#e3f0eb;
+        --zero:#c2410c;
+        --zero-soft:#fdf0e7;
+        --warn-bg:#fff6db;
+        --warn-line:#d9a406;
+        --warn-ink:#5c4300;
+        --shadow:0 1px 2px rgba(19,26,22,.05), 0 12px 32px -16px rgba(19,26,22,.18);
+      }
+      @media (prefers-color-scheme: dark){
+        :root{
+          --bg:#0d110f;
+          --surface:#161c18;
+          --surface-2:#1d2620;
+          --ink:#edf2ec;
+          --muted:#9dafa2;
+          --line:#2b362e;
+          --accent:#43c6ab;
+          --accent-strong:#7fdec9;
+          --accent-soft:#17352d;
+          --zero:#fb923c;
+          --zero-soft:#33200f;
+          --warn-bg:#2e270e;
+          --warn-line:#b98a04;
+          --warn-ink:#f5d97a;
+          --shadow:0 1px 2px rgba(0,0,0,.3), 0 12px 32px -16px rgba(0,0,0,.5);
+        }
+      }
+      *{box-sizing:border-box}
+      html{scroll-behavior:smooth}
+      @media (prefers-reduced-motion: reduce){ html{scroll-behavior:auto} }
+      body{
+        margin:0; background:var(--bg); color:var(--ink);
+        font-family:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+        font-size:16px; line-height:1.75;
+        -webkit-font-smoothing:antialiased;
+      }
+      .mono{font-family:"IBM Plex Mono", ui-monospace, monospace}
+      .wrap{max-width:1060px; margin:0 auto; padding:0 20px}
+
+      /* ---------- draft bar ---------- */
+      .draftbar{
+        background:var(--ink); color:var(--bg);
+        font-size:13px; line-height:1.6; text-align:center;
+        padding:10px 20px;
+      }
+      .draftbar strong{font-weight:700}
+      .draftbar .tag{
+        display:inline-block; border:1px solid currentColor; border-radius:4px;
+        padding:0 7px; margin-right:8px; font-size:12px; font-weight:700; letter-spacing:.08em;
+        vertical-align:1px;
+      }
+
+      /* ---------- brand header ---------- */
+      .brandbar{
+        display:flex; align-items:center; justify-content:space-between; gap:16px;
+        padding:20px 0 0;
+      }
+      .brand{
+        display:inline-flex; align-items:center; gap:11px;
+        font-family:"Source Serif 4", Georgia, serif; font-weight:900;
+        font-size:24px; line-height:1; color:var(--ink); letter-spacing:.01em;
+      }
+      .brand .brand-mark{
+        width:34px; height:34px; border-radius:9px; flex:0 0 auto;
+        background:var(--accent); color:#fff;
+        display:flex; align-items:center; justify-content:center;
+        font-family:"IBM Plex Mono", monospace; font-size:17px; font-weight:600;
+      }
+      @media (prefers-color-scheme: dark){ .brand .brand-mark{color:#06231d} }
+      .brand .brand-mark::before{content:"N"}
+      .brand small{
+        display:block; font-family:"Inter", sans-serif; font-weight:500;
+        font-size:12.5px; color:var(--muted); letter-spacing:.02em; margin-top:4px;
+      }
+
+      /* ---------- hero ---------- */
+      .hero{padding:36px 0 8px}
+      .hero .kicker{
+        display:inline-flex; align-items:center; gap:8px;
+        font-size:13px; font-weight:700; letter-spacing:.14em; color:var(--accent);
+        text-transform:uppercase; margin:0 0 18px;
+      }
+      .hero .kicker::before{content:""; width:26px; height:2px; background:var(--accent)}
+      h1{
+        font-family:"Source Serif 4", Georgia, serif;
+        font-size:clamp(34px, 6.4vw, 58px); line-height:1.22; font-weight:900;
+        margin:0 0 20px; letter-spacing:.01em;
+      }
+      h1 .hl{color:var(--accent); white-space:nowrap}
+      .hero .lede{font-size:clamp(16px,2.4vw,19px); color:var(--muted); max-width:42em; margin:0 0 26px}
+      .hero .lede strong{color:var(--ink)}
+      .engine-row{display:flex; flex-wrap:wrap; gap:8px; margin:0 0 8px}
+      .engine-chip{
+        border:1px solid var(--line); background:var(--surface); border-radius:999px;
+        padding:7px 14px; font-size:14px; font-weight:500;
+        display:inline-flex; align-items:center; gap:7px;
+      }
+      .engine-chip i{width:7px; height:7px; border-radius:50%; background:var(--accent); display:inline-block}
+      .hero-actions{display:flex; flex-wrap:wrap; gap:12px; margin-top:26px}
+      .btn{
+        display:inline-flex; align-items:center; justify-content:center;
+        min-height:48px; padding:10px 24px; border-radius:8px;
+        font-size:16px; font-weight:700; text-decoration:none; cursor:pointer;
+        border:1px solid transparent;
+      }
+      .btn-primary{background:var(--accent); color:#fff}
+      @media (prefers-color-scheme: dark){ .btn-primary{color:#06231d} }
+      .btn-primary:hover{background:var(--accent-strong)}
+      .btn-ghost{background:transparent; color:var(--ink); border-color:var(--line)}
+      .btn-ghost:hover{border-color:var(--accent); color:var(--accent)}
+
+      /* ---------- red line ---------- */
+      .redline{
+        margin:36px 0 0; background:var(--warn-bg);
+        border:1.5px solid var(--warn-line); border-radius:10px;
+        padding:20px 22px; display:flex; gap:14px; align-items:flex-start;
+      }
+      .redline .mark{
+        flex:0 0 auto; width:30px; height:30px; border-radius:50%;
+        background:var(--warn-line); color:#fff; font-weight:900; font-size:17px;
+        display:flex; align-items:center; justify-content:center; margin-top:3px;
+      }
+      .redline h2{font-size:17px; margin:0 0 4px; color:var(--warn-ink)}
+      .redline p{margin:0; font-size:15px; color:var(--warn-ink)}
+
+      /* ---------- sections ---------- */
+      section{padding:52px 0 0}
+      .sec-head{margin:0 0 8px}
+      .sec-head .no{
+        font-family:"IBM Plex Mono", monospace; font-size:13px; font-weight:600;
+        color:var(--accent); letter-spacing:.1em;
+      }
+      h2.sec-title{
+        font-family:"Source Serif 4", Georgia, serif;
+        font-size:clamp(24px,4vw,32px); font-weight:900; line-height:1.35; margin:4px 0 10px;
+      }
+      .sec-sub{color:var(--muted); max-width:44em; margin:0 0 26px}
+
+      /* ---------- sample card ---------- */
+      .sample-card{
+        background:var(--surface); border:1px solid var(--line); border-radius:14px;
+        box-shadow:var(--shadow); overflow:hidden;
+      }
+      .sample-top{
+        display:flex; flex-wrap:wrap; gap:10px 22px; align-items:baseline; justify-content:space-between;
+        padding:22px 26px 18px; border-bottom:1px solid var(--line);
+      }
+      .sample-top .clinic{font-size:19px; font-weight:900}
+      .sample-top .clinic span{font-weight:500; color:var(--muted); font-size:15px}
+      .sample-top .meta{font-size:13.5px; color:var(--muted); text-align:right}
+      .stats{display:grid; grid-template-columns:repeat(3,1fr);}
+      .stat{padding:28px 26px 24px; text-align:left}
+      .stat + .stat{border-left:1px solid var(--line)}
+      .stat .big{
+        font-family:"IBM Plex Mono", monospace; font-weight:600;
+        font-size:clamp(52px,9vw,84px); line-height:1; color:var(--zero); letter-spacing:-.02em;
+      }
+      .stat .big small{font-size:.42em; color:var(--muted); font-weight:500}
+      .stat .label{font-size:17px; font-weight:700; margin-top:10px}
+      .stat .desc{font-size:14px; color:var(--muted); margin-top:2px}
+      .bar{height:8px; border-radius:4px; background:var(--surface-2); margin-top:14px; overflow:hidden}
+      .bar i{display:block; height:100%; width:0; background:var(--zero)}
+      .sample-foot{
+        padding:18px 26px 22px; background:var(--surface-2);
+        font-size:14.5px; color:var(--muted);
+      }
+      .sample-foot strong{color:var(--ink)}
+      .sample-foot p{margin:0 0 6px}
+      .sample-foot p:last-child{margin-bottom:0}
+
+      /* ---------- competitors ---------- */
+      .comp-list{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+      .comp{
+        background:var(--surface); border:1px solid var(--line); border-radius:10px;
+        padding:18px 20px; display:flex; gap:14px; align-items:flex-start;
+      }
+      .comp .rank{
+        font-family:"IBM Plex Mono", monospace; font-weight:600; font-size:15px;
+        color:var(--accent); background:var(--accent-soft); border-radius:6px;
+        padding:3px 9px; flex:0 0 auto; margin-top:2px;
+      }
+      .comp .name{font-weight:700; font-size:16.5px; line-height:1.45}
+      .comp .note{font-size:14px; color:var(--muted)}
+
+      /* ---------- tech gaps ---------- */
+      .gaps{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
+      .gap{
+        background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:22px;
+      }
+      .gap .status{
+        display:inline-block; font-size:12.5px; font-weight:700; letter-spacing:.06em;
+        color:var(--zero); background:var(--zero-soft); border-radius:4px; padding:2px 8px; margin-bottom:12px;
+      }
+      .gap h3{font-size:18px; margin:0 0 8px}
+      .gap h3 code{font-family:"IBM Plex Mono",monospace; font-size:.92em}
+      .gap p{margin:0; font-size:14.5px; color:var(--muted)}
+
+      /* ---------- includes ---------- */
+      .includes{display:grid; grid-template-columns:repeat(3,1fr); gap:12px}
+      .inc{
+        border-top:3px solid var(--accent); background:var(--surface);
+        border-left:1px solid var(--line); border-right:1px solid var(--line); border-bottom:1px solid var(--line);
+        border-radius:0 0 10px 10px; padding:22px;
+      }
+      .inc .step{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--accent); font-weight:600}
+      .inc h3{font-size:18px; margin:6px 0 8px}
+      .inc p{margin:0; font-size:14.5px; color:var(--muted)}
+      .not-included{
+        margin-top:14px; font-size:14.5px; color:var(--muted);
+        border:1px dashed var(--line); border-radius:10px; padding:14px 18px; background:var(--surface);
+      }
+      .not-included strong{color:var(--ink)}
+
+      /* ---------- method toggle ---------- */
+      .method-box{background:var(--surface); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow); padding:24px 26px}
+      .seg{display:inline-flex; border:1px solid var(--line); border-radius:9px; overflow:hidden; margin-bottom:20px}
+      .seg button{
+        appearance:none; border:0; background:transparent; color:var(--muted);
+        font:inherit; font-size:15px; font-weight:700; padding:10px 20px; cursor:pointer; min-height:44px;
+      }
+      .seg button[aria-pressed="true"]{background:var(--accent); color:#fff}
+      @media (prefers-color-scheme: dark){ .seg button[aria-pressed="true"]{color:#06231d} }
+      .formula{
+        font-family:"IBM Plex Mono", monospace; font-size:clamp(16px,3.4vw,24px); font-weight:600;
+        display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; margin:0 0 10px;
+      }
+      .formula .op{color:var(--muted)}
+      .formula .total{color:var(--accent)}
+      .method-note{color:var(--muted); font-size:15px; margin:0; max-width:46em}
+      .method-note strong{color:var(--ink)}
+
+      /* ---------- pricing ---------- */
+      .prices{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+      .price{
+        background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:26px;
+      }
+      .price.featured{border:2px solid var(--accent)}
+      .price .who{font-size:14px; font-weight:700; letter-spacing:.08em; color:var(--accent); margin:0 0 8px}
+      .price .amount{font-family:"IBM Plex Mono",monospace; font-size:clamp(40px,6vw,54px); font-weight:600; line-height:1}
+      .price .amount small{font-size:15px; color:var(--muted); font-family:"Inter",sans-serif; font-weight:500}
+      .price p{color:var(--muted); font-size:14.5px; margin:12px 0 0}
+      .price-note{font-size:14px; color:var(--muted); margin-top:12px}
+
+      /* ---------- FAQ ---------- */
+      .faq details{
+        background:var(--surface); border:1px solid var(--line); border-radius:10px;
+        margin-bottom:10px; overflow:hidden;
+      }
+      .faq summary{
+        cursor:pointer; font-weight:700; font-size:16.5px; padding:16px 20px;
+        list-style:none; display:flex; justify-content:space-between; align-items:center; gap:12px;
+        min-height:52px;
+      }
+      .faq summary::-webkit-details-marker{display:none}
+      .faq summary::after{content:"+"; font-family:"IBM Plex Mono",monospace; font-size:22px; color:var(--accent); flex:0 0 auto}
+      .faq details[open ] summary::after{content:"–"}
+      .faq .a{padding:0 20px 18px; color:var(--muted); font-size:15px}
+      .faq .a p{margin:0}
+
+      /* ---------- contact / footer ---------- */
+      .contact{
+        margin-top:52px; background:var(--accent-strong); color:#eafaf4; border-radius:14px;
+        padding:34px 30px; text-align:left;
+      }
+      @media (prefers-color-scheme: dark){ .contact{background:var(--surface-2); color:var(--ink)} }
+      .contact h2{font-family:"Source Serif 4", Georgia, serif; font-size:clamp(22px,3.6vw,30px); margin:0 0 10px; font-weight:900}
+      .contact p{margin:0 0 20px; opacity:.88; max-width:40em}
+      .contact .btn{background:#fff; color:var(--accent-strong); border:0}
+      @media (prefers-color-scheme: dark){ .contact .btn{background:var(--accent); color:#06231d} }
+      .contact .placeholder-note{font-size:13px; opacity:.7; margin:14px 0 0}
+      footer{padding:30px 0 44px; color:var(--muted); font-size:13.5px}
+      footer .draft-note{
+        border-top:1px solid var(--line); padding-top:18px; margin:0;
+      }
+      footer strong{color:var(--ink)}
+
+      @media (max-width:720px){
+        .hero{padding-top:28px}
+        .stats{grid-template-columns:1fr}
+        .stat + .stat{border-left:0; border-top:1px solid var(--line)}
+        .stat{padding:22px}
+        .sample-top .meta{text-align:left}
+        .comp-list,.gaps,.includes,.prices{grid-template-columns:1fr}
+        .redline{flex-direction:column; gap:8px}
+        section{padding-top:42px}
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="draftbar" role="note">
+      <span class="tag">DRAFT</span><strong>This page is an unpublished draft. Please get the sample clinic's permission before naming it publicly.</strong>
+    </div>
+
+    <div class="wrap">
+
+      <!-- BRAND HEADER -->
+      <div class="brandbar">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>Named by AI<small>AI Search Visibility Audits for Local Clinics</small></span></div>
+      </div>
+
+      <!-- HERO -->
+      <header class="hero">
+        <p class="kicker">GEO Audit · AI Search Visibility</p>
+        <h1>Patients are asking AI,<br />not scrolling <span class="hl">Google</span>.</h1>
+        <p class="lede">
+          Patients in Toronto now ask <strong>ChatGPT, Perplexity, Gemini, and Google AI Mode</strong> directly:
+          “What's a good physiotherapy clinic near me?” AI names a few clinics on the spot —
+          <strong>whether your clinic is on that list can be measured.</strong>
+          A GEO audit measures exactly that: how often your clinic is named, cited, and recommended — and who you're losing to.
+        </p>
+        <div class="engine-row" aria-label="AI engines covered by the audit">
+          <span class="engine-chip"><i></i>ChatGPT</span>
+          <span class="engine-chip"><i></i>Perplexity</span>
+          <span class="engine-chip"><i></i>Gemini</span>
+          <span class="engine-chip"><i></i>Google AI Mode</span>
+        </div>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#contact">Request an audit</a>
+          <a class="btn btn-ghost" href="#sample">See a sample result ↓</a>
+        </div>
+
+        <div class="redline" role="note" aria-label="Important: no guarantees">
+          <div class="mark" aria-hidden="true">!</div>
+          <div>
+            <h2>The ground rules, up front</h2>
+            <p>This service does <strong>not guarantee</strong> any ranking, citation, mention, traffic, or revenue growth. The audit report is a <strong>snapshot of the day it was measured</strong> — AI models change their answers every day, so what we measure today is not a promise about tomorrow. What we deliver is a measurement and a fix list, not a promise.</p>
+          </div>
+        </div>
+      </header>
+
+      <!-- SAMPLE -->
+      <section id="sample">
+        <div class="sec-head">
+          <span class="no">01 / SAMPLE RESULT</span>
+          <h2 class="sec-title">A real clinic, measured: 40 questions asked, 0 appearances</h2>
+        </div>
+        <p class="sec-sub">This is not simulated data. On 2026-11-19, we ran the first batch of tests on a Toronto physiotherapy clinic. Here is what we found — it does not exist in AI's answers at all.</p>
+
+        <div class="sample-card">
+          <div class="sample-top">
+            <div class="clinic">East End Physio <span>· 388 Carlaw Ave, Toronto</span></div>
+            <div class="meta">Measured: 2026-11-19 (first batch)<br />5 patient questions × 3 engines × 3 runs each</div>
+          </div>
+          <div class="stats">
+            <div class="stat">
+              <div class="big">0<small> / 40</small></div>
+              <div class="label">Named</div>
+              <div class="desc">Times the clinic's name appeared in an AI answer</div>
+              <div class="bar" aria-hidden="true"><i></i></div>
+            </div>
+            <div class="stat">
+              <div class="big">0<small> / 40</small></div>
+              <div class="label">Cited</div>
+              <div class="desc">Times AI listed the clinic's website as a source</div>
+              <div class="bar" aria-hidden="true"><i></i></div>
+            </div>
+            <div class="stat">
+              <div class="big">0<small> / 40</small></div>
+              <div class="label">Recommended</div>
+              <div class="desc">Times AI actively recommended the clinic to a patient</div>
+              <div class="bar" aria-hidden="true"><i></i></div>
+            </div>
+          </div>
+          <div class="sample-foot">
+            <p><strong>How to read this:</strong> 45 runs were planned; 40 were completed (the rest were not finished). In those 40 runs, this clinic was named 0 times, cited 0 times, and recommended 0 times — when patients asked AI, it never made the shortlist once.</p>
+            <p><strong>Scope note:</strong> This is a 40-run snapshot sample, not a full audit (a full audit is 180 runs — see “How we measure” below).</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- COMPETITORS -->
+      <section id="competitors">
+        <div class="sec-head">
+          <span class="no">02 / COMPETITIVE LANDSCAPE</span>
+          <h2 class="sec-title">Who you're losing to</h2>
+        </div>
+        <p class="sec-sub">In the same 40 runs, these are the clinics AI named again and again. Patients aren't short on demand — AI is sending them elsewhere.</p>
+        <div class="comp-list">
+          <div class="comp"><span class="rank">01</span><div><div class="name">Cornerstone Physiotherapy</div><div class="note">Named repeatedly by AI in the sample questions</div></div></div>
+          <div class="comp"><span class="rank">02</span><div><div class="name">Foundation Physiotherapy &amp; Wellness</div><div class="note">Named repeatedly by AI in the sample questions</div></div></div>
+          <div class="comp"><span class="rank">03</span><div><div class="name">Axis Therapy &amp; Performance</div><div class="note">Named repeatedly by AI in the sample questions</div></div></div>
+          <div class="comp"><span class="rank">04</span><div><div class="name">Rebuild Physiotherapy</div><div class="note">Named repeatedly by AI in the sample questions</div></div></div>
+          <div class="comp"><span class="rank">05</span><div><div class="name">Rebalance Sports Medicine</div><div class="note">Named repeatedly by AI in the sample questions</div></div></div>
+        </div>
+      </section>
+
+      <!-- TECH GAPS -->
+      <section id="tech">
+        <div class="sec-head">
+          <span class="no">03 / TECHNICAL CHECK</span>
+          <h2 class="sec-title">What's missing technically</h2>
+        </div>
+        <p class="sec-sub">Visibility isn't just about content. A technical check of the sample clinic's website found three basic gaps — and these are the first things AI looks at when it reads and cites a website.</p>
+        <div class="gaps">
+          <div class="gap">
+            <span class="status">MISSING</span>
+            <h3><code>llms.txt</code></h3>
+            <p>There is no <code>llms.txt</code> file in the site's root directory. This file is a site guide written specifically for AI models to read — without it, AI has to guess what your clinic does.</p>
+          </div>
+          <div class="gap">
+            <span class="status">MISSING</span>
+            <h3>FAQ content</h3>
+            <p>The website has no FAQ section. Most questions patients ask AI are phrased as questions and answers — if your site has no matching Q&amp;A content, AI has no answer of yours to cite.</p>
+          </div>
+          <div class="gap">
+            <span class="status">INCOMPLETE</span>
+            <h3>Schema / JSON-LD</h3>
+            <p>The structured data covers only Organization. With no more detailed clinic, service, and location information, AI has a hard time confirming your clinic type, service area, and where you're located.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- INCLUDES -->
+      <section id="includes">
+        <div class="sec-head">
+          <span class="no">04 / WHAT'S INCLUDED</span>
+          <h2 class="sec-title">What the audit includes</h2>
+        </div>
+        <p class="sec-sub">One audit delivers three things: a report that shows where you stand, a prioritized fix list, and a 30-day execution schedule.</p>
+        <div class="includes">
+          <div class="inc">
+            <span class="step">DELIVERABLE 1</span>
+            <h3>Audit report</h3>
+            <p>A run-by-run record, for every engine and every question, of whether your clinic was named / cited / recommended — and which competitors kept showing up instead.</p>
+          </div>
+          <div class="inc">
+            <span class="step">DELIVERABLE 2</span>
+            <h3>Top 10 fix list</h3>
+            <p>The 10 changes most worth making first, drawn from the measurement results and the technical check, ranked by impact and difficulty — so you know where to start.</p>
+          </div>
+          <div class="inc">
+            <span class="step">DELIVERABLE 3</span>
+            <h3>30-day plan</h3>
+            <p>The fix list broken into steps you can move through over 30 days, on a schedule your clinic or your current provider can follow.</p>
+          </div>
+        </div>
+        <p class="not-included"><strong>Implementation is not included:</strong> The audit covers measurement and the fix list only — we don't modify your website or write content for you. Whether to make the changes, and who makes them, is up to your clinic.</p>
+      </section>
+
+      <!-- METHOD -->
+      <section id="method">
+        <div class="sec-head">
+          <span class="no">05 / HOW WE MEASURE</span>
+          <h2 class="sec-title">Where the numbers come from</h2>
+        </div>
+        <p class="sec-sub">The method is open and the scope is verifiable. Switch between the two scopes below to see the difference between the sample snapshot and a full audit.</p>
+        <div class="method-box">
+          <div class="seg" role="group" aria-label="Switch measurement scope">
+            <button type="button" id="btn-sample" aria-pressed="true">Sample snapshot · 40 runs</button>
+            <button type="button" id="btn-full" aria-pressed="false">Full audit · 180 runs</button>
+          </div>
+          <p class="formula" id="formula">
+            <span>5 patient questions</span><span class="op">×</span>
+            <span>3 engines</span><span class="op">×</span>
+            <span>3 runs each</span><span class="op">=</span>
+            <span class="total">45 runs (40 completed)</span>
+          </p>
+          <p class="method-note" id="method-note">
+            <strong>The sample is a snapshot, not a full audit.</strong> First batch measured on 2026-11-19: 45 runs planned, 40 completed, across ChatGPT, Perplexity, and Gemini. The sample is small — it shows whether a problem exists, and is not the same scope as a full audit.
+          </p>
+        </div>
+      </section>
+
+      <!-- PRICING -->
+      <section id="pricing">
+        <div class="sec-head">
+          <span class="no">06 / PRICING</span>
+          <h2 class="sec-title">Pricing</h2>
+        </div>
+        <div class="prices">
+          <div class="price featured">
+            <p class="who">FIRST ORDER</p>
+            <div class="amount">$199 <small>/ per audit</small></div>
+            <p>First-audit price for the first clinic. Includes the audit report, Top 10 fix list, and 30-day plan. Implementation not included.</p>
+          </div>
+          <div class="price">
+            <p class="who">FROM THE 4TH ORDER</p>
+            <div class="amount">$499 <small>/ per audit</small></div>
+            <p>Standard pricing applies from the fourth order onward. Same deliverables as the first order: audit report, Top 10 fix list, and 30-day plan. Implementation not included.</p>
+          </div>
+        </div>
+        <p class="price-note">One more time: the price buys measurement and a fix list. It does <strong>not</strong> include any guarantee of ranking, citation, mention, traffic, or revenue growth (see the ground rules at the top of this page).</p>
+      </section>
+
+      <!-- FAQ -->
+      <section id="faq">
+        <div class="sec-head">
+          <span class="no">07 / FAQ</span>
+          <h2 class="sec-title">Frequently asked questions</h2>
+        </div>
+        <div class="faq">
+          <details>
+            <summary>How is a GEO audit different from traditional SEO?</summary>
+            <div class="a"><p>Traditional SEO looks at where your website ranks in Google search results. A GEO audit looks at what happens when a patient asks ChatGPT, Perplexity, Gemini, or Google AI Mode directly — whether your clinic appears in AI's answer at all. Named, cited, and recommended are each counted separately, run by run.</p></div>
+          </details>
+          <details>
+            <summary>Is the 0/40 in the sample a full-audit result?</summary>
+            <div class="a"><p>No. The sample is the first-batch snapshot from 2026-11-19: 5 patient questions × 3 engines × 3 runs each — 45 runs planned, 40 completed. A full audit is 15 questions × 4 engines × 3 runs each, for 180 runs total.</p></div>
+          </details>
+          <details>
+            <summary>After the audit, can you guarantee AI will recommend my clinic?</summary>
+            <div class="a"><p>No. No ranking, citation, mention, traffic, or revenue growth is guaranteed. The report is a snapshot of the day it was measured, and AI models change their answers every day. What the audit does deliver is a measurement of where you stand, who you're losing to, your technical gaps, and a prioritized Top 10 fix list with a 30-day plan.</p></div>
+          </details>
+          <details>
+            <summary>Will you make the fixes on the list for us?</summary>
+            <div class="a"><p>No. Implementation is not included in the audit — we don't modify your website or write content for you. The fix list and 30-day plan spell out what to change and in what order, so your clinic can do it in-house or hand it to your current website provider.</p></div>
+          </details>
+          <details>
+            <summary>Why ask each question 3 times?</summary>
+            <div class="a"><p>Because AI answers aren't fixed: ask the same question several times and the clinics named can change. Running each question 3 times and counting named / cited / recommended across all runs is closer to what patients will actually see than asking just once.</p></div>
+          </details>
+          <details>
+            <summary>How much does it cost?</summary>
+            <div class="a"><p>$199 for the first order; $499 from the fourth order onward. Both include the same deliverables — audit report, Top 10 fix list, and 30-day plan — with implementation not included.</p></div>
+          </details>
+        </div>
+      </section>
+
+      <!-- CONTACT -->
+      <div class="contact" id="contact">
+        <h2>Want to know if your clinic exists in AI's eyes?</h2>
+        <p>Send us your clinic name and website, and start with a measurement. When it's done, you'll get the report, the Top 10 fix list, and the 30-day plan — see where you stand first, then decide whether to act on it.</p>
+        <a class="btn" href="#contact" aria-label="Contact by email (placeholder — replace with a real email address before publishing)">Contact by email</a>
+        <p class="placeholder-note">* Contact details are a placeholder: replace this with a real contact email before this page is published. This page does not collect any visitor information.</p>
+      </div>
+
+      <footer>
+        <p class="draft-note"><strong>Draft note:</strong> This page is an unpublished draft. Please get the sample clinic's permission before naming it publicly. Data source: first-batch measurement of East End Physio (388 Carlaw Ave, Toronto) on 2026-11-19 — 45 runs planned, 40 completed.</p>
+      </footer>
+
+    </div>
+
+    <script>
+      (function () {
+        var btnSample = document.getElementById('btn-sample');
+        var btnFull = document.getElementById('btn-full');
+        var formula = document.getElementById('formula');
+        var note = document.getElementById('method-note');
+
+        var VIEWS = {
+          sample: {
+            formula: '<span>5 patient questions</span><span class="op">×</span><span>3 engines</span><span class="op">×</span><span>3 runs each</span><span class="op">=</span><span class="total">45 runs (40 completed)</span>',
+            note: '<strong>The sample is a snapshot, not a full audit.</strong> First batch measured on 2026-11-19: 45 runs planned, 40 completed, across ChatGPT, Perplexity, and Gemini. The sample is small — it shows whether a problem exists, and is not the same scope as a full audit.'
+          },
+          full: {
+            formula: '<span>15 patient questions</span><span class="op">×</span><span>4 engines</span><span class="op">×</span><span>3 runs each</span><span class="op">=</span><span class="total">180 runs</span>',
+            note: '<strong>A full audit is 180 runs.</strong> 15 patient questions × 4 engines (ChatGPT, Perplexity, Gemini, Google AI Mode) × 3 runs each. Delivers the audit report, Top 10 fix list, and 30-day plan. Implementation not included.'
+          }
+        };
+
+        function show(which) {
+          var isSample = which === 'sample';
+          btnSample.setAttribute('aria-pressed', isSample ? 'true' : 'false');
+          btnFull.setAttribute('aria-pressed', isSample ? 'false' : 'true');
+          formula.innerHTML = VIEWS[which].formula;
+          note.innerHTML = VIEWS[which].note;
+        }
+        btnSample.addEventListener('click', function () { show('sample'); });
+        btnFull.addEventListener('click', function () { show('full'); });
+      })();
+    </script>
+  </body>
+</html>
